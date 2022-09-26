@@ -1,6 +1,6 @@
 # vuln-web-app
 
-- XSS
+- XSS Stored and Reflected
 - SQL Injection
 - Error message expose
 - Debug allowed 

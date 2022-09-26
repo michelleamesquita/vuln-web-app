@@ -11,3 +11,12 @@ CREATE TABLE accounts (
 );
 
 INSERT INTO accounts (id, username, password, email) VALUES (1, 'test', 'test', 'test@test.com');
+
+CREATE TABLE comments (
+	  id int(11) NOT NULL AUTO_INCREMENT,
+
+  	comment VARCHAR(100) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+

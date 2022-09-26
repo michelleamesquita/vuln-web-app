@@ -4,6 +4,7 @@ from flask_mysqldb import MySQL
 import mysql.connector
 import subprocess
 import os
+from flask_session import Session
 
 
 
@@ -12,7 +13,19 @@ app = Flask(__name__)
 # Change this to your secret key (can be anything, it's for extra protection)
 app.secret_key = 'key'
 app.config['UPLOAD_FOLDER']= 'src'
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+app.config['SESSION_COOKIE_HTTPONLY'] = False
 
+Session(app)
+
+config = {
+        'user': 'root',
+        'password': 'root',
+        'host': 'db',
+        'port': '3306',
+        'database': 'knights'
+        }
 
 
 
@@ -24,15 +37,7 @@ def login():
        
         username = request.form['username']
         password = request.form['password']
-       
 
-        config = {
-        'user': 'root',
-        'password': 'root',
-        'host': 'db',
-        'port': '3306',
-        'database': 'knights'
-        }
 
         mydb = mysql.connector.connect(**config)
 
@@ -57,6 +62,7 @@ def login():
           <p>Welcome back,"""+ session['username']+"""!</p>
           <div class="links">
                 <a href='"""+url_for('upload_file')+"""'">Upload</a>
+                <a href='"""+url_for('blog')+"""'">Blog</a>
                 <a href='"""+url_for('logout')+"""'">Logout</a>
 			</div>""")
         else:
@@ -164,13 +170,17 @@ def page():
 
 @app.route('/pythonlogin/upload')
 def upload_file():
-   return("""
+    # if not session.get("username"):
+    #     return redirect(url_for('login'))
+    
+    return("""
         <html>
         <body>
             <form action = '"""+url_for('uploader_file')+"""' method = "POST" 
                 enctype = "multipart/form-data">
                 <input type = "file" name = "file" />
                 <input type = "submit"/>
+                <a href='"""+url_for('logout')+"""'">Logout</a>
             </form>   
         </body>
         </html>
@@ -181,10 +191,54 @@ def uploader_file():
    if request.method == 'POST':
       f = request.files['file']
     #   f.save(secure_filename(f.filename))
-    #   f.save(f.filename)
+
       f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
 
       return redirect(url_for('upload_file'))
+
+@app.route('/blog', methods = ['GET', 'POST'])
+def blog():
+    if not session.get("username"):
+        return redirect(url_for('login'))
+
+    
+
+    comment = request.form.get("comment")
+
+    if comment is None:
+            comment=""
+
+        
+    if request.method == 'POST':
+
+
+        mydb = mysql.connector.connect(**config)
+
+        mycursor = mydb.cursor()
+
+        
+        mycursor.execute("INSERT INTO comments (comment) VALUES (%s)",(comment,))
+
+        mydb.commit()
+
+
+        mydb = mysql.connector.connect(**config)
+        mycursor = mydb.cursor()
+        mycursor.execute("SELECT * FROM knights.comments")
+
+        comment = []
+        
+        for key,value in mycursor.fetchall():
+                    comment.append(value)
+        
+        
+        
+
+
+        
+    
+    return render_template('index.html', comments=comment)
+    # return render_template('index.html')
 
       
 
