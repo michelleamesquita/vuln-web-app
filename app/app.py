@@ -1,10 +1,9 @@
 
-from flask import Flask, request, redirect, url_for, session,escape
+from flask import Flask, request, redirect, url_for, session,render_template,escape
 from flask_mysqldb import MySQL
 import mysql.connector
 import subprocess
-
-
+import os
 
 
 
@@ -12,8 +11,8 @@ app = Flask(__name__)
 
 # Change this to your secret key (can be anything, it's for extra protection)
 app.secret_key = 'key'
+app.config['UPLOAD_FOLDER']= 'src'
 
-# app.config['MAX_CONTENT_PATH'] = "5000"
 
 
 
@@ -53,11 +52,12 @@ def login():
             session['id'] = account[0]
             session['username'] = account[1]
             # return 'Logged in successfully!'
-            return("""<h2> passed! 😎</h2> """
+            return("""<h2> passed! 😎</h2>"""
           """<br>
           <p>Welcome back,"""+ session['username']+"""!</p>
           <div class="links">
-				<a href='"""+url_for('logout')+"""'">Logout</a>
+                <a href='"""+url_for('upload_file')+"""'">Upload</a>
+                <a href='"""+url_for('logout')+"""'">Logout</a>
 			</div>""")
         else:
             msg = 'Incorrect username/password!'
@@ -92,16 +92,6 @@ def logout():
    session.pop('username', None)
    
    return redirect(url_for('login'))
-
-
-@app.route("/shell")
-def page():
-
-
-    cmd = request.args.get("cmd")
-
-    return subprocess.check_output(cmd, shell=True)
-    # return subprocess.check_output(cmd, shell=False)
 
 @app.route("/")
 def index():
@@ -163,10 +153,40 @@ def run(script):
 #     resp.headers['Content-Security-Policy']='default-src \'self\''
 #     return resp
 
+@app.route("/shell")
+def page():
 
 
+    cmd = request.args.get("cmd")
 
+    return subprocess.check_output(cmd, shell=True)
+    # return subprocess.check_output(cmd, shell=False)
 
+@app.route('/pythonlogin/upload')
+def upload_file():
+   return("""
+        <html>
+        <body>
+            <form action = '"""+url_for('uploader_file')+"""' method = "POST" 
+                enctype = "multipart/form-data">
+                <input type = "file" name = "file" />
+                <input type = "submit"/>
+            </form>   
+        </body>
+        </html>
+   """)
+	
+@app.route('/uploader', methods = ['GET', 'POST'])
+def uploader_file():
+   if request.method == 'POST':
+      f = request.files['file']
+    #   f.save(secure_filename(f.filename))
+    #   f.save(f.filename)
+      f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
+
+      return redirect(url_for('upload_file'))
+
+      
 
 
 if __name__ == '__main__':
