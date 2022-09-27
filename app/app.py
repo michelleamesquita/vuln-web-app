@@ -157,6 +157,10 @@ def run(script):
 # @app.after_request
 # def add_security_headers(resp):
 #     resp.headers['Content-Security-Policy']='default-src \'self\''
+#     resp.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+#     resp.headers['X-Content-Type-Options'] = 'nosniff'
+#     resp.headers['X-Frame-Options'] = 'SAMEORIGIN'
+
 #     return resp
 
 @app.route("/shell")
