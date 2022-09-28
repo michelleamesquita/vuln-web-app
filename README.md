@@ -31,7 +31,7 @@ All vulnerabilites that you can find:
 
 - /
 - /script
-- /cmd
+- /shell
 - /python-login
 - /python-login/upload
 - /python-login/logout
