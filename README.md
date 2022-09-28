@@ -20,8 +20,23 @@ All vulnerabilites that you can find:
 - To build and change something in code ```docker-compose build```
 
 ----
-- Web App run at port 8085
+- Web App runs at port 8085
 
 ```http://localhost:8085```
+
+- MySQL DB runs at 32000
+
+---
+## Routers
+
+- /
+- /script
+- /cmd
+- /python-login
+- /python-login/upload
+- /python-login/logout
+- /python-login/blog
+
+---
 
 Enjoy it 💜
