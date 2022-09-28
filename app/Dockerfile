@@ -8,5 +8,4 @@ COPY requirements.txt /app/
 COPY templates /app/
 RUN pip install -r requirements.txt
 
-COPY * /app/
 CMD python app.py
