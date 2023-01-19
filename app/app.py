@@ -5,19 +5,23 @@ import mysql.connector
 import subprocess
 import os
 from flask_session import Session
+from flask_wtf.csrf import CSRFProtect
 
 
 
 app = Flask(__name__)
 
 # Change this to your secret key (can be anything, it's for extra protection)
-app.secret_key = 'key'
+app.secret_key = '5accdb11b2c10a78d7c92c5fa102ea77fcd50c2058b00f6e'
 app.config['UPLOAD_FOLDER']= 'src'
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SESSION_COOKIE_HTTPONLY'] = False
 
+
 Session(app)
+csrf = CSRFProtect(app)
+
 
 config = {
         'user': 'root',
@@ -30,6 +34,7 @@ config = {
 
 
 @app.route('/pythonlogin/', methods=['GET', 'POST'])
+@csrf.exempt
 def login():
     msg = ''
    
@@ -63,6 +68,7 @@ def login():
           <div class="links">
                 <a href='"""+url_for('upload_file')+"""'">Upload</a>
                 <a href='"""+url_for('blog')+"""'">Blog</a>
+                <a href='"""+url_for('form')+"""'">Form</a>
                 <a href='"""+url_for('logout')+"""'">Logout</a>
 			</div>""")
         else:
@@ -91,6 +97,7 @@ def login():
 
 
 @app.route('/pythonlogin/logout')
+@csrf.exempt
 def logout():
    
    session.pop('loggedin', None)
@@ -100,6 +107,7 @@ def logout():
    return redirect(url_for('login'))
 
 @app.route("/")
+@csrf.exempt
 def index():
     
     celsius = request.args.get("celsius", "")
@@ -132,6 +140,7 @@ def index():
     )
  
 @app.route("/<int:celsius>")
+@csrf.exempt
 def fahrenheit_from(celsius):
     """Convert Celsius to Fahrenheit degrees."""
     fahrenheit = float(celsius) * 9 / 5 + 32
@@ -139,6 +148,7 @@ def fahrenheit_from(celsius):
     return str(fahrenheit)
 
 @app.route("/<string:script>")
+@csrf.exempt
 def run(script):
     script=request.args.get("script", "")
 
@@ -164,6 +174,7 @@ def run(script):
 #     return resp
 
 @app.route("/shell")
+@csrf.exempt
 def page():
 
 
@@ -173,6 +184,7 @@ def page():
     # return subprocess.check_output(cmd, shell=False)
 
 @app.route('/pythonlogin/upload')
+@csrf.exempt
 def upload_file():
     # if not session.get("username"):
     #     return redirect(url_for('login'))
@@ -191,6 +203,7 @@ def upload_file():
    """)
 	
 @app.route('/uploader', methods = ['GET', 'POST'])
+@csrf.exempt
 def uploader_file():
    if request.method == 'POST':
       f = request.files['file']
@@ -201,6 +214,7 @@ def uploader_file():
       return redirect(url_for('upload_file'))
 
 @app.route('/blog', methods = ['GET', 'POST'])
+@csrf.exempt
 def blog():
     if not session.get("username"):
         return redirect(url_for('login'))
@@ -237,12 +251,27 @@ def blog():
         
         
         
-
-
-        
     
     return render_template('index.html', comments=comment)
     # return render_template('index.html')
+
+
+@app.route('/form', methods = ['GET', 'POST'])
+@csrf.exempt
+
+def form():
+
+    if not session.get("username"):
+        return redirect(url_for('login'))
+    
+    if request.method == "GET" :
+     return render_template('form.html')
+
+    if request.method == 'POST':
+        return render_template('form.html')
+        # return {
+        #     'token': request.form.get('csrf_token')
+        # }
 
       
 

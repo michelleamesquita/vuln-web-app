@@ -2,3 +2,4 @@ Flask
 mysql-connector
 flask-mysqldb
 Flask-Session
+Flask-WTF
