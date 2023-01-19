@@ -10,6 +10,7 @@ All vulnerabilites that you can find:
 - Credentials
 - File Upload
 - Autorization
+- Csrf
 
 ----
 
