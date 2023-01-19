@@ -181,7 +181,8 @@ def page():
     cmd = request.args.get("cmd")
 
     return subprocess.check_output(cmd, shell=True)
-    # return subprocess.check_output(cmd, shell=False)
+    # command_to_be_executed = ['cat', '/']
+    # return subprocess.check_output(command_to_be_executed, shell=True)
 
 @app.route('/pythonlogin/upload')
 @csrf.exempt
