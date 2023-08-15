@@ -1,15 +1,18 @@
 
-from flask import Flask, request, redirect, url_for, session,render_template,escape
+from flask import Flask, request, redirect, url_for, session,render_template,escape,send_from_directory
 from flask_mysqldb import MySQL
 import mysql.connector
 import subprocess
 import os
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
+from flask_sitemapper import Sitemapper
 
+sitemapper = Sitemapper()
 
 
 app = Flask(__name__)
+sitemapper.init_app(app)
 
 # Change this to your secret key (can be anything, it's for extra protection)
 app.secret_key = '5accdb11b2c10a78d7c92c5fa102ea77fcd50c2058b00f6e'
@@ -32,7 +35,7 @@ config = {
         }
 
 
-
+@sitemapper.include(lastmod="2023-18-05")
 @app.route('/pythonlogin/', methods=['GET', 'POST'])
 @csrf.exempt
 def login():
@@ -95,7 +98,7 @@ def login():
 
     )
 
-
+@sitemapper.include(lastmod="2023-18-05")
 @app.route('/pythonlogin/logout')
 @csrf.exempt
 def logout():
@@ -106,6 +109,7 @@ def logout():
    
    return redirect(url_for('login'))
 
+@sitemapper.include(lastmod="2023-18-05")
 @app.route("/")
 @csrf.exempt
 def index():
@@ -173,6 +177,7 @@ def run(script):
 
 #     return resp
 
+@sitemapper.include(lastmod="2023-18-05")
 @app.route("/shell")
 @csrf.exempt
 def page():
@@ -184,6 +189,7 @@ def page():
     # command_to_be_executed = ['cat', '/']
     # return subprocess.check_output(command_to_be_executed, shell=True)
 
+@sitemapper.include(lastmod="2023-18-05")
 @app.route('/pythonlogin/upload')
 @csrf.exempt
 def upload_file():
@@ -202,7 +208,8 @@ def upload_file():
         </body>
         </html>
    """)
-	
+
+@sitemapper.include(lastmod="2023-18-05")	
 @app.route('/uploader', methods = ['GET', 'POST'])
 @csrf.exempt
 def uploader_file():
@@ -214,6 +221,7 @@ def uploader_file():
 
       return redirect(url_for('upload_file'))
 
+@sitemapper.include(lastmod="2023-18-05")
 @app.route('/blog', methods = ['GET', 'POST'])
 @csrf.exempt
 def blog():
@@ -256,7 +264,7 @@ def blog():
     return render_template('index.html', comments=comment)
     # return render_template('index.html')
 
-
+@sitemapper.include(lastmod="2023-18-05")
 @app.route('/form', methods = ['GET', 'POST'])
 @csrf.exempt
 
@@ -273,6 +281,14 @@ def form():
         # return {
         #     'token': request.form.get('csrf_token')
         # }
+
+@app.route("/sitemap.xml")
+def sitemap():
+  return sitemapper.generate()
+
+@app.route("/robots.txt")
+def robots():
+    return "User-agent: *\n Disallow: /sitemap.xml"
 
       
 

@@ -33,10 +33,10 @@ All vulnerabilites that you can find:
 - /
 - /script
 - /shell
-- /python-login
-- /python-login/upload
-- /python-login/logout
-- /python-login/blog
+- /pythonlogin
+- /pythonlogin/upload
+- /pythonlogin/logout
+- /pythonlogin/blog
 
 ---
 
