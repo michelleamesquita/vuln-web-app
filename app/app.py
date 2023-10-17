@@ -79,28 +79,7 @@ def login():
 
     return render_template('login.html',msg=msg)
 
-    return (
-        	"""<h2> LOGIN 🦊  </h2>"""
-		"""<br>"""
-		"""
-			<form action='"""+url_for('login')+"""' method="post">
-				<label for="username">
-					<i class="fas fa-user"></i>
-				</label>
-				<input type="text" name="username" placeholder="Username" id="username" required>
-				<label for="password">
-					<i class="fas fa-lock"></i>
-				</label>
-				<input type="password" name="password" placeholder="Password" id="password" required>
-				
-				<input type="submit" value="Login">
-
-                <div class="msg">"""+ msg+"""</div>
-			</form>
-		"""
-
-    )
-
+    
 @sitemapper.include(lastmod="2023-18-05")
 @app.route('/pythonlogin/logout')
 @csrf.exempt
