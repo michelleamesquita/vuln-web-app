@@ -9,15 +9,17 @@
 
   <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
     <div class="container-fluid">
-
+      <a href="#" onclick="history.back()">
+        <span class="glyphicon glyphicon-home"></span>
+        </a>
   <head>
     <meta charset="utf-8">
-    <div style="padding-left: 10cm !important;">
+    <div style="padding-left: 1cm !important;">
     <h2> Blog Post 👽 </h2>
     </div>
   </head>
   <div class="d-flex">
-  <a href='http://127.0.0.1:8085/pythonlogin/logout'>
+  <a href="{{url_for('logout')}}" style="padding-inline-end: 1cm !important;">
   <button class="btn btn-secondary my-2 my-sm-0" >Logout</button>
   </a>
   </div>
