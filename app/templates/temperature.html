@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<fieldset>
+<!DOCTYPE html>
+<html>
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+  <head>
+    <meta charset="utf-8">
+    <h3> Temperature 🌡 </h3>
+  </head>
+  </div>
+</div>
+</nav>
+</br>
+
+  <body>
+
+    <h2> It's a simple web app! 🦊 </h2>
+	<br>
+	<form action="" method="get">
+                 <input class="form-control" type="text" name="celsius" placeholder="Temperature">
+                 <br>
+                 <input class="btn btn-outline-secondary" type="submit" value="Convert">
+                
+    </form>  
+    <br>
+    <h4>Fahrenheit: </h4> 
+    <h5>
+    <a id="fahrenheit"> 
+        {{ fahrenheit }}
+    </a>
+    </h5>  
+
+
+</body>
+</html>
+</fieldset>
+{% endblock %}

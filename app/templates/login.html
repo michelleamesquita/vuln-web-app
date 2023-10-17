@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<fieldset>
+<!DOCTYPE html>
+<html>
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+  <head>
+    <meta charset="utf-8">
+    <h3> LOGIN 🦊 </h3>
+  </head>
+  </div>
+</div>
+</nav>
+</br>
+
+  <body>
+   <!-- <div style="text-align:center;"> -->
+    <form action = "{{url_for('login')}}" method="post">
+
+         	<label for="username">
+         	<i class="fas fa-user"></i>
+        	</label>
+
+        	<input class="form-control is-invalid" type="text" name="username" placeholder="Username" id="username" required >
+
+         	<label for="password">
+        	<i class="fas fa-lock"></i>
+         	</label>
+         			
+          <input class="form-control is-invalid" type="password" name="password" placeholder="Password" id="password" required >
+           
+          <br>
+         	
+          <input class="btn btn-outline-secondary" type="submit" value="Login">
+
+          <div class="invalid-feedback">{{ msg }}</div>
+
+    
+          <!-- style="width: 300px !important" -->
+    </form>
+   <!-- </div> -->
+
+</body>
+</html>
+</fieldset>
+{% endblock %}

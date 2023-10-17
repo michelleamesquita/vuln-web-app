@@ -1,6 +1,7 @@
 
 from flask import Flask, request, redirect, url_for, session,render_template,escape,send_from_directory
 from flask_mysqldb import MySQL
+from flask_bootstrap import Bootstrap
 import mysql.connector
 import subprocess
 import os
@@ -8,11 +9,15 @@ from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from flask_sitemapper import Sitemapper
 
+
+
 sitemapper = Sitemapper()
 
 
 app = Flask(__name__)
 sitemapper.init_app(app)
+Bootstrap(app)
+
 
 # Change this to your secret key (can be anything, it's for extra protection)
 app.secret_key = '5accdb11b2c10a78d7c92c5fa102ea77fcd50c2058b00f6e'
@@ -65,17 +70,15 @@ def login():
             session['id'] = account[0]
             session['username'] = account[1]
             # return 'Logged in successfully!'
-            return("""<h2> passed! 😎</h2>"""
-          """<br>
-          <p>Welcome back,"""+ session['username']+"""!</p>
-          <div class="links">
-                <a href='"""+url_for('upload_file')+"""'">Upload</a>
-                <a href='"""+url_for('blog')+"""'">Blog</a>
-                <a href='"""+url_for('form')+"""'">Form</a>
-                <a href='"""+url_for('logout')+"""'">Logout</a>
-			</div>""")
+
+            return render_template('home.html',session=session['username'])
+
+        
         else:
             msg = 'Incorrect username/password!'
+
+    return render_template('login.html',msg=msg)
+
     return (
         	"""<h2> LOGIN 🦊  </h2>"""
 		"""<br>"""
@@ -131,17 +134,8 @@ def index():
     # except ValueError:
     #     return "invalid input"
 
-    return (
-        	"""<h2> It's a simple web app! 🦊 </h2>"""
-		"""<br>"""
-		"""<form action="" method="get">
-                <input type="text" name="celsius">
-                <input type="submit" value="Convert">
-            </form>"""
-        + "Fahrenheit: "
-        + '<a id="fahrenheit">' +fahrenheit+ '</a>'
+    return render_template('temperature.html',fahrenheit=fahrenheit)
 
-    )
  
 @app.route("/<int:celsius>")
 @csrf.exempt
@@ -158,15 +152,8 @@ def run(script):
 
     # script = str(escape(request.args.get("script", "")))
 
+    return render_template('script.html',script=script)
 
-    return (
-	"""<h2> Run! 🕸 </h2>"""
-	"""<form action="" method="get">
-                <input type="text" name="script">
-                <input type="submit" value="Run">
-            </form>"""
-    + '<a id="script">' + script + '</a>'
-    )
 
 # @app.after_request
 # def add_security_headers(resp):
@@ -195,19 +182,8 @@ def page():
 def upload_file():
     # if not session.get("username"):
     #     return redirect(url_for('login'))
+    return render_template('upload.html')
     
-    return("""
-        <html>
-        <body>
-            <form action = '"""+url_for('uploader_file')+"""' method = "POST" 
-                enctype = "multipart/form-data">
-                <input type = "file" name = "file" />
-                <input type = "submit"/>
-                <a href='"""+url_for('logout')+"""'">Logout</a>
-            </form>   
-        </body>
-        </html>
-   """)
 
 @sitemapper.include(lastmod="2023-18-05")	
 @app.route('/uploader', methods = ['GET', 'POST'])
@@ -288,7 +264,9 @@ def sitemap():
 
 @app.route("/robots.txt")
 def robots():
-    return "User-agent: *\n Disallow: /sitemap.xml"
+    return render_template('robots.html')
+    
+
 
       
 

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<fieldset>
+<!DOCTYPE html>
+<html>
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+  <head>
+    <meta charset="utf-8">
+    <div style="padding-left: 10cm !important;">
+    <h3> File upload 🗂 </h3>
+    </div>
+  </head>
+  <a href='http://127.0.0.1:8085/pythonlogin/logout'>
+    <button class="btn btn-secondary my-2 my-sm-0" >Logout</button>
+    </a>
+  </div>
+</div>
+</nav>
+</br>
+
+  <body>
+
+    <form action = "{{url_for('uploader_file')}}" method = "POST"  enctype = "multipart/form-data">
+
+        <label for="formFile" class="form-label mt-4">Make a file upload</label>
+        <br>
+
+        <input class="form-control" type = "file" name = "file" />
+        <br>
+        <div data-lastpass-icon-root="true" style="position: relative !important; height: 0px !important; width: 0px !important; float: left !important;"></div></div>
+        <input  class="btn btn-outline-secondary" type = "submit"/>
+    </form>   
+
+
+
+</body>
+</html>
+</fieldset>
+{% endblock %}

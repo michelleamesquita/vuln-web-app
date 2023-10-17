@@ -1,9 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<fieldset>
 <!DOCTYPE html>
 <html>
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
   <head>
     <meta charset="utf-8">
-    <h2> Form CSRF 🐬 </h2>
+    <div style="padding-left: 10cm !important;">
+    <h3> Form CSRF 🐬 </h3>
+    </div>
   </head>
+  <a href='http://127.0.0.1:8085/pythonlogin/logout'>
+    <button class="btn btn-secondary my-2 my-sm-0" >Logout</button>
+    </a>
+  </div>
+</div>
+</nav>
+</br>
 
   <body>
 
@@ -11,16 +26,23 @@
    <!-- csrf protection -->
    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" id="csrf_token"/>
 
-        First name:
+   <div class="form-group">
+        <label for="staticName" class="form-label mt-4">First name:</label>
+        <input type="text" name="fname" placeholder="Name" class="form-control">
+      </div>
+      <div data-lastpass-icon-root="true" style="position: relative !important; height: 0px !important; width: 0px !important; float: left !important;"></div></div>
 
-        <input type="text" name="fname" placeholder="Name">
+        <div class="form-group">
+        
+        <label for="exampleInputPassword1" class="form-label mt-4">Last name: </label>
+        <input type="text" class="form-control" name="lname" placeholder="Last Name">
+        <div data-lastpass-icon-root="true" style="position: relative !important; height: 0px !important; width: 0px !important; float: left !important;"></div></div>
 
-        <br> Last name:
- 
-        <input type="text" name="lname" placeholder="Last Name">
+
+      </div>
         <br>
  
-        <input type="submit" value="Submit">
+        <input type="submit" class="btn btn-outline-secondary" value="Submit">
 </form>
 
 <script type="text/javascript">
@@ -29,3 +51,5 @@
 
 </body>
 </html>
+</fieldset>
+{% endblock %}
