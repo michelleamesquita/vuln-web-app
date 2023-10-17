@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<fieldset>
+<!DOCTYPE html>
+<html>
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+  <head>
+    <meta charset="utf-8">
+    <div style="padding-left: 10cm !important;">
+    <h3> Home 🏠 </h3>
+  </div>
+  
+    <div class="nav navbar-right">
+        <a href='http://127.0.0.1:8085/pythonlogin/logout'>
+        <button class="btn btn-secondary my-2 my-sm-0" >Logout</button>
+        </a>
+    </div>
+  </head>
+  </div>
+  
+</div>
+</nav>
+</br>
+
+  <body>
+
+    <br>
+    <div style="padding-left: 3cm;">
+        <h2>Welcome back, {{ session }} !</h2>
+    </div>
+        <br>
+        <br>
+        <div style="text-align:center;">
+        <img src={{url_for('static', filename='hacker-man.jpg')}} style="width:500px;height:650;" />
+
+        <br>
+        <br>
+        <a href="{{url_for('upload_file')}}">
+            <button type="button" class="btn btn-outline-primary" style="margin:5px;"> Upload </button>
+        </a>
+        <a href="{{url_for('blog')}}">
+            <button type="button" class="btn btn-outline-secondary" style="margin:5px;"> Blog </button>
+        </a>
+        <a href="{{url_for('form')}}">
+            <button type="button" class="btn btn-outline-light" style="margin:5px;"> Form </button>
+        </a>
+        </div>
+
+
+</body>
+</html>
+</fieldset>
+{% endblock %}

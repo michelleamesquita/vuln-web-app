@@ -1,20 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 {% autoescape off %}
+
 <!DOCTYPE html>
 <html>
+
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+
   <head>
     <meta charset="utf-8">
+    <div style="padding-left: 10cm !important;">
     <h2> Blog Post 👽 </h2>
+    </div>
   </head>
-
+  <div class="d-flex">
+  <a href='http://127.0.0.1:8085/pythonlogin/logout'>
+  <button class="btn btn-secondary my-2 my-sm-0" >Logout</button>
+  </a>
+  </div>
+</div>
+</nav>
   <body>
 
-  
-    <form action="/blog" method="POST">
-      <input type="text" name="comment" 
-             placeholder="Comment" autocomplete="off" />
-      <input type="submit" value="Submit new comment" />
-    </form>
+    <h2>Make a comment!</h2>
+    <br>
 
+    <form action="/blog" method="POST">
+
+
+      <div class="form-group">
+        <label for="exampleInputComment" class="form-label mt-4">Comment</label>
+
+        <input type="text" name="comment" 
+        placeholder="Comment" autocomplete="off" class="form-control" />
+
+      <div data-lastpass-icon-root="true" style="position: relative !important; height: 0px !important; width: 0px !important; float: left !important;"></div></div>
+
+      <br>
+      <input class="btn btn-outline-secondary" type="submit" value="Submit new comment" />
+      <div class="form-group">
+
+
+   
+    </form>
+    <br>
     <h3>Showing all comments:</h3>
    
 
@@ -24,8 +56,8 @@
       </div>
     {% endfor %}
 
-    <a href='http://127.0.0.1:8085/pythonlogin/logout'>Logout</a>
 
   </body>
 </html>
 {% endautoescape %}
+{% endblock %}
