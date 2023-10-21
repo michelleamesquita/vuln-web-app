@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<fieldset>
+<!DOCTYPE html>
+<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a href="{{url_for('login')}}" onclick="">
+      <span class="glyphicon glyphicon-home"></span>
+      </a>
+  <head>
+    <meta charset="utf-8">
+    <div style="text-align: center !important  ;">
+    <h3> Not found ❌ </h3>
+</div>
+</nav>
+<html>
+    <body>
+        <div style="text-align:center;">
+         <img src={{url_for('static', filename='back_to_the_future.gif')}} style="width:500px;height:650;" />
+    
+    </body>
+</html>
+</fieldset>
+{% endblock %}

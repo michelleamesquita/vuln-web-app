@@ -111,19 +111,20 @@ def index():
     celsius = request.args.get("celsius", "")
 
 
-    if celsius:
-            fahrenheit = fahrenheit_from(celsius)
-    else:
-            fahrenheit = ""
-
-
-    # try:
-    #     if celsius:
+    # if celsius:
     #         fahrenheit = fahrenheit_from(celsius)
-    #     else:
+    # else:
     #         fahrenheit = ""
-    # except ValueError:
-    #     return "invalid input"
+
+
+    try:
+        if celsius:
+            fahrenheit = fahrenheit_from(celsius)
+        else:
+            fahrenheit = ""
+    except ValueError:
+        return render_template('exception.html')
+        # return "invalid input"
 
     return render_template('temperature.html',fahrenheit=fahrenheit)
 
