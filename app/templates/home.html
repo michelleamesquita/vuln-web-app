@@ -31,7 +31,8 @@
 
     <br>
     <div style="padding-left: 3cm;">
-        <h2>Welcome back, {{ session }} !</h2>
+        <!-- <h2>Welcome back, {{ session }} !</h2> -->
+        <h2>Welcome back, {{ request.args.get('session', '') }} !</h2>
     </div>
         <br>
         <br>

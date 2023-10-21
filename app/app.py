@@ -70,8 +70,14 @@ def login():
             session['id'] = account[0]
             session['username'] = account[1]
             # return 'Logged in successfully!'
+            app.logger.info('%s logged in successfully',session['username'])
 
-            return render_template('home.html',session=session['username'])
+            # data = {"data": session['username']}
+
+            return redirect(url_for("home",session=session['username']))
+            
+            #return render_template('home.html',session=session['username'])
+            #<!-- <h2>Welcome back, {{ request.form('session', '') }} !</h2> -->
 
         
         else:
@@ -79,6 +85,12 @@ def login():
 
     return render_template('login.html',msg=msg)
 
+
+@sitemapper.include(lastmod="2023-18-05")
+@app.route('/home')
+@csrf.exempt
+def home():
+    return render_template('home.html')
     
 @sitemapper.include(lastmod="2023-18-05")
 @app.route('/pythonlogin/logout')
