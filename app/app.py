@@ -74,7 +74,7 @@ def login():
 
             # data = {"data": session['username']}
 
-            return redirect(url_for("home",session=session['username']))
+            return redirect(url_for("home",user=session['username']))
             
             #return render_template('home.html',session=session['username'])
             #<!-- <h2>Welcome back, {{ request.form('session', '') }} !</h2> -->
