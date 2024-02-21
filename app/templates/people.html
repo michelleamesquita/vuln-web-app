@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!doctype html>
+<html>
+  
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a href="{{url_for('home')}}" onclick="">
+        <span class="glyphicon glyphicon-home"></span>
+        </a>
+  <head>
+    <meta charset="utf-8">
+    <div style="padding-left: 1cm !important;">
+    <h2> Personal Info DB </h2>
+    </div>
+
+  </head>
+  <div class="d-flex">
+  <a href="{{url_for('logout')}}" style="padding-inline-end: 1cm !important;">
+  <button class="btn btn-secondary my-2 my-sm-0" >Logout</button>
+  </a>
+  </div>
+</div>
+</nav>
+
+<style>
+ .table>thead>tr.info>th {background-color: #1ba2f6 !important}
+ .table-container {
+    /* display: center!important; */
+    justify-content: center !important ;
+    align-items: center !important;
+}
+.well {
+  background-color: #1a0a33 !important;
+  border: 0px;
+  padding: 80px;
+}
+</style>
+
+  </head>
+  <body>
+    
+    <div class="well bs-component">
+      <table class="table  table-info center" style="border:1px solid" >
+        <thead>
+            <tr class="info">
+            <th scope="col">Id</th>
+            <th scope="col">Username</th>
+            <th scope="col">Password</th>
+            <th scope="col">CPF</th>
+            <th scope="col">Email</th>
+            </tr>
+        </thead>
+        <tbody>
+          {% for d in details %}
+                <tr class="table-secondary" style="border:1px solid">
+                    <td>{{ d.id }}</th>
+                    <td>{{ d.username }}</td>
+                    <td>{{ d.password }}</td>
+                    <td>{{ d.cpf }}</td>
+                    <td>{{ d.email }}</td>
+   
+                </tr>
+            {% endfor %}
+           
+        </tbody>
+      </table>
+    </div>
+    
+    </div>
+      
+  </body>
+</html>
+
+{% endblock %}

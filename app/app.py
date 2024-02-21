@@ -56,7 +56,7 @@ def login():
 
         mycursor = mydb.cursor()
 
-        # mycursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
+        #mycursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
         
 
         # mycursor.execute("SELECT * FROM knights.accounts WHERE username ='' or 1=1--' and password ='' or 1=1--'" )
@@ -111,19 +111,19 @@ def index():
     celsius = request.args.get("celsius", "")
 
 
-    # if celsius:
-    #         fahrenheit = fahrenheit_from(celsius)
-    # else:
-    #         fahrenheit = ""
-
-
-    try:
-        if celsius:
+    if celsius:
             fahrenheit = fahrenheit_from(celsius)
-        else:
+    else:
             fahrenheit = ""
-    except ValueError:
-        return render_template('exception.html')
+
+
+    # try:
+    #     if celsius:
+    #         fahrenheit = fahrenheit_from(celsius)
+    #     else:
+    #         fahrenheit = ""
+    # except ValueError:
+    #     return render_template('exception.html')
         # return "invalid input"
 
     return render_template('temperature.html',fahrenheit=fahrenheit)
@@ -226,8 +226,6 @@ def blog():
         for key,value in mycursor.fetchall():
                     comment.append(value)
         
-        
-        
     
     return render_template('index.html', comments=comment)
     # return render_template('index.html')
@@ -258,6 +256,22 @@ def sitemap():
 def robots():
     return render_template('robots.html')
     
+@app.route('/people',methods = ['GET'])
+def people_list():
+
+    cr = []
+    mydb = mysql.connector.connect(**config)
+
+    mycursor = mydb.cursor()
+
+    if request.method == 'GET':
+        mycursor.execute("SELECT * FROM knights.personalinfo")
+
+        for row in mycursor.fetchall():
+            cr.append({"id": row[0], "username": (row[1]), "password": (row[2]),"email": (row[3]),"cpf": (row[4])})
+        
+        return render_template("people.html", details = cr)
+
 
 
       
