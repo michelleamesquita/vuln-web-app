@@ -3,7 +3,7 @@ name: Use Secure Code Review GPT
 on:
   push:
     branches:
-      - main
+      - gpt-code-review
   workflow_dispatch:  # Permite execução manual da Action
 
 jobs:
