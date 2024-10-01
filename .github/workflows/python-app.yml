@@ -1,0 +1,21 @@
+name: Use Secure Code Review GPT
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:  # Permite execução manual da Action
+
+jobs:
+  run-secure-code-review-gpt:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write  # Permissão de escrita para criar PRs
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run Secure Code Review from another repository
+      uses: michelleamesquita/secure-code-review-gpt@main
