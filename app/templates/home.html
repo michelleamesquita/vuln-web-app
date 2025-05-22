@@ -41,7 +41,10 @@
 
         <br>
         <br>
-          <a href="{{url_for('run',script='')}}">
+        <a href="{{url_for('index',farenheit='farenheit')}}">
+          <button type="button" class="btn btn-outline-warning" style="margin:5px;"> Temperature </button>
+        </a>
+          <a href="{{url_for('run',script='script')}}">
             <button type="button" class="btn btn-outline-success" style="margin:5px;"> Script </button>
         </a>
         <a href="{{url_for('upload_file')}}">
