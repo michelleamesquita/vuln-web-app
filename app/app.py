@@ -1,6 +1,7 @@
 
 from flask import Flask, request, redirect, url_for, session,render_template,escape,send_from_directory
 from flask_mysqldb import MySQL
+# from werkzeug.security import generate_password_hash, check_password_hash
 from flask_bootstrap import Bootstrap
 import mysql.connector
 import subprocess
@@ -8,13 +9,16 @@ import os
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from flask_sitemapper import Sitemapper
-
+from flasgger import Swagger
+import requests
+import re
 
 
 sitemapper = Sitemapper()
 
 
 app = Flask(__name__)
+swagger = Swagger(app)
 sitemapper.init_app(app)
 Bootstrap(app)
 
@@ -44,6 +48,26 @@ config = {
 @app.route('/pythonlogin/', methods=['GET', 'POST'])
 @csrf.exempt
 def login():
+    """
+    User Login
+    ---
+    tags:
+      - authentication
+    parameters:
+      - name: username
+        in: formData
+        type: string
+        required: true
+      - name: password
+        in: formData
+        type: string
+        required: true
+    responses:
+      200:
+        description: Login successful
+      401:
+        description: Invalid credentials
+    """
     msg = ''
    
     if request.method == 'POST' and 'username' in request.form and 'password' in request.form:
@@ -60,10 +84,20 @@ def login():
         
 
         # mycursor.execute("SELECT * FROM knights.accounts WHERE username ='' or 1=1--' and password ='' or 1=1--'" )
+        
+        # Vulnerability: SQL Injection. The input is not sanitized.
         mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"' and password ='"+ password +"'" )
 
         
         account = mycursor.fetchone()
+
+        
+        # mycursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+        # account = mycursor.fetchone()
+        # if account and check_password_hash(account['password'], password):
+        #     # Password is correct
+        # else:
+        #     # Incorrect password
        
         if account:
             session['loggedin'] = True
@@ -81,27 +115,112 @@ def login():
 
         
         else:
-            msg = 'Incorrect username/password!'
+            # Vulnerability: User Enumeration. The application provides different responses
+            # for invalid usernames and invalid passwords, allowing attackers to guess valid usernames.
+            mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"'")
+            if mycursor.fetchone():
+                msg = 'Incorrect password!'
+            else:
+                msg = 'Incorrect username!'
+            # Mitigation: Always return a generic error message for login failures.
+            # msg = 'Incorrect username or password!'
+            
+            # A09:2021 - Security Logging and Monitoring Failures
+            # The application should log failed login attempts to help detect attacks
+            # like password spraying or credential stuffing.
+            app.logger.warning('Failed login attempt for username: %s', username)
 
     return render_template('login.html',msg=msg)
+
+
+@app.route('/register', methods=['GET', 'POST'])
+@csrf.exempt
+def register():
+    """
+    User Registration
+    ---
+    tags:
+      - authentication
+    parameters:
+      - name: username
+        in: formData
+        type: string
+        required: true
+      - name: password
+        in: formData
+        type: string
+        required: true
+      - name: email
+        in: formData
+        type: string
+        required: true
+    responses:
+      200:
+        description: Registration successful
+      400:
+        description: Invalid input or account already exists
+    """
+    msg = ''
+    if request.method == 'POST' and 'username' in request.form and 'password' in request.form and 'email' in request.form:
+        username = request.form['username']
+        password = request.form['password']
+        email = request.form['email']
+        
+        mydb = mysql.connector.connect(**config)
+        mycursor = mydb.cursor(dictionary=True)
+        mycursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+        account = mycursor.fetchone()
+
+        if account:
+            msg = 'Account already exists!'
+        elif not re.match(r'[A-Za-z0-9]+', username):
+            msg = 'Username must contain only characters and numbers!'
+        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+            msg = 'Invalid email address!'
+        elif not username or not password or not email:
+            msg = 'Please fill out the form!'
+        else:
+            # Vulnerability: Storing password in plaintext.
+            # If the database is compromised, all user passwords will be exposed.
+            mycursor.execute('INSERT INTO accounts (username, password, email) VALUES (%s, %s, %s)', (username, password, email,))
+            
+            # Mitigation: Hash the password before storing it.
+            # hash = generate_password_hash(password)
+            # mycursor.execute('INSERT INTO accounts (username, password) VALUES (%s, %s)', (username, hash,))
+            
+            mydb.commit()
+            msg = 'You have successfully registered!'
+    elif request.method == 'POST':
+        msg = 'Please fill out the form!'
+    
+    return render_template('register.html', msg=msg)
 
 
 @sitemapper.include(lastmod="2023-18-05")
 @app.route('/home')
 @csrf.exempt
 def home():
-    return render_template('home.html')
+    user_id = session.get('id')
+    return render_template('home.html', user_id=user_id)
     
 @sitemapper.include(lastmod="2023-18-05")
 @app.route('/pythonlogin/logout')
 @csrf.exempt
 def logout():
+    """
+    User Logout
+    ---
+    tags:
+      - authentication
+    responses:
+      302:
+        description: Redirects to the login page
+    """
+    session.pop('loggedin', None)
+    session.pop('id', None)
+    session.pop('username', None)
    
-   session.pop('loggedin', None)
-   session.pop('id', None)
-   session.pop('username', None)
-   
-   return redirect(url_for('login'))
+    return redirect(url_for('login'))
 
 @sitemapper.include(lastmod="2023-18-05")
 @app.route("/")
@@ -160,6 +279,21 @@ def run(script):
 @app.route("/shell")
 @csrf.exempt
 def page():
+    """
+    Execute a shell command
+    ---
+    tags:
+      - vulnerability_test
+    parameters:
+      - name: cmd
+        in: query
+        type: string
+        required: true
+        description: The command to execute.
+    responses:
+      200:
+        description: The output of the command.
+    """
 
 
     cmd = request.args.get("cmd")
@@ -273,7 +407,78 @@ def people_list():
         return render_template("people.html", details = cr)
 
 
+@app.route('/profile/<int:user_id>')
+def profile(user_id):
+    """
+    Get User Profile
+    ---
+    tags:
+      - user
+    parameters:
+      - name: user_id
+        in: path
+        type: integer
+        required: true
+        description: The ID of the user to retrieve.
+    responses:
+      200:
+        description: User profile data
+      404:
+        description: User not found
+      302:
+        description: Redirects to login if not authenticated
+    """
+    # this is a placeholder
+    # user_id is the id of the user whose profile we want to see
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
 
+    mydb = mysql.connector.connect(**config)
+    mycursor = mydb.cursor(dictionary=True)
+    mycursor.execute("SELECT username, email, cpf FROM accounts WHERE id = %s", (user_id,))
+    user = mycursor.fetchone()
+    mycursor.close()
+
+    if user:
+        # we found the user, now we can display their profile
+        return render_template('profile.html', user=user)
+
+    return render_template('exception.html'), 404
+
+@app.route('/ssrf', methods=['GET', 'POST'])
+def ssrf():
+    """
+    Server-Side Request Forgery (SSRF) test endpoint
+    ---
+    tags:
+      - vulnerability_test
+    parameters:
+      - name: url
+        in: formData
+        type: string
+        required: true
+        description: A URL to fetch content from.
+    responses:
+      200:
+        description: Displays the content of the fetched URL.
+    """
+    if request.method == 'POST':
+        url = request.form.get('url')
+        try:
+         
+            
+            # Mitigation: Implement a whitelist to only allow requests to trusted domains.
+            # from urllib.parse import urlparse
+            # allowed_domains = ['example.com', 'trusted.com']
+            # domain = urlparse(url).netloc
+            # if domain not in allowed_domains:
+            #     return render_template('ssrf.html', content="Error: Domain not allowed.")
+
+            content = requests.get(url).text
+            return render_template('ssrf.html', content=content)
+        except requests.exceptions.RequestException as e:
+            return render_template('ssrf.html', content=f"Error: {e}")
+    return render_template('ssrf.html')
       
 
 

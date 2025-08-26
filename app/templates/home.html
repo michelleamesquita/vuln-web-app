@@ -60,6 +60,17 @@
         <a href="{{url_for('people_list')}}">
           <button type="button" class="btn btn-outline-danger" style="margin:5px;"> P. Info </button>
       </a>
+        {% if user_id %}
+        <a href="{{url_for('profile', user_id=user_id)}}">
+          <button type="button" class="btn btn-outline-info" style="margin:5px;"> My Profile </button>
+        </a>
+        {% endif %}
+        <a href="{{url_for('ssrf')}}">
+          <button type="button" class="btn btn-outline-warning" style="margin:5px;"> SSRF </button>
+        </a>
+        <a href="/apidocs/">
+            <button type="button" class="btn btn-outline-dark" style="margin:5px;"> Swagger </button>
+        </a>
         </div>
 
 

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>SSRF Example</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label for="url">Enter a URL to fetch:</label>
+            <input type="text" class="form-control" id="url" name="url" placeholder="http://example.com">
+        </div>
+        <button type="submit" class="btn btn-primary">Fetch</button>
+    </form>
+    {% if content %}
+        <h3>Content from URL:</h3>
+        <pre>{{ content }}</pre>
+    {% endif %}
+</div>
+{% endblock %}

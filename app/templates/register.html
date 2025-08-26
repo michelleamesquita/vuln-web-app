@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<fieldset>
+<!DOCTYPE html>
+<html>
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+  <head>
+    <meta charset="utf-8">
+    <h3> REGISTER 🦊 </h3>
+  </head>
+  </div>
+</div>
+</nav>
+</br>
+
+  <body>
+   <div style="text-align:center;">
+    <form action = "{{url_for('register')}}" method="post">
+
+            <label for="username">
+            <i class="fas fa-user"></i>
+           	</label>
+           	<input class="form-control is-invalid" type="text" name="username" placeholder="Username" id="username" required style="text-align:center !important" >
+
+         	<label for="password">
+           	<i class="fas fa-lock"></i>
+         	</label>
+          <input class="form-control is-invalid" type="password" name="password" placeholder="Password" id="password" required style="text-align:center !important;">
+           
+          <label for="email">
+            <i class="fas fa-envelope"></i>
+           </label>
+          <input class="form-control is-invalid" type="email" name="email" placeholder="Email" id="email" required style="text-align:center !important;">
+
+          <br>
+         	
+          <input class="btn btn-outline-secondary" type="submit" value="Register">
+
+          <div class="invalid-feedback">{{ msg }}</div>
+
+    </form>
+    <br>
+    <a href="{{ url_for('login') }}">Already have an account? Login</a>
+   </div>
+
+</body>
+</html>
+</fieldset>
+{% endblock %}
