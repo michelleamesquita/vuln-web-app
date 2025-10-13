@@ -87,7 +87,7 @@ def login():
         mycursor = mydb.cursor()
         
         try:
-            #mycursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
+            # mycursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
             
 
             # mycursor.execute("SELECT * FROM knights.accounts WHERE username ='' or 1=1--' and password ='' or 1=1--'" )
@@ -96,7 +96,9 @@ def login():
             mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"' and password ='"+ password +"'" )
 
             
-            account = mycursor.fetchone()
+            # Fetch all results to avoid "Unread result found" error
+            results = mycursor.fetchall()
+            account = results[0] if results else None
 
             
             # mycursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
@@ -124,10 +126,16 @@ def login():
             else:
                 # Vulnerability: User Enumeration. The application provides different responses
                 # for invalid usernames and invalid passwords, allowing attackers to guess valid usernames.
-                mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"'")
-                if mycursor.fetchone():
-                    msg = 'Incorrect password!'
-                else:
+                try:
+                    mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"'")
+                    user_results = mycursor.fetchall()
+                    user_check = user_results[0] if user_results else None
+                        
+                    if user_check:
+                        msg = 'Incorrect password!'
+                    else:
+                        msg = 'Incorrect username!'
+                except:
                     msg = 'Incorrect username!'
                 # Mitigation: Always return a generic error message for login failures.
                 # msg = 'Incorrect username or password!'
@@ -281,14 +289,14 @@ def run(script):
     return render_template('script.html',script=script)
 
 
-# @app.after_request
-# def add_security_headers(resp):
-#     resp.headers['Content-Security-Policy']='default-src \'self\''
-#     resp.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
-#     resp.headers['X-Content-Type-Options'] = 'nosniff'
-#     resp.headers['X-Frame-Options'] = 'SAMEORIGIN'
+@app.after_request
+def add_security_headers(resp):
+    resp.headers['Content-Security-Policy']='default-src \'self\''
+    resp.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    resp.headers['X-Content-Type-Options'] = 'nosniff'
+    resp.headers['X-Frame-Options'] = 'SAMEORIGIN'
 
-#     return resp
+    return resp
 
 @sitemapper.include(lastmod="2023-18-05")
 @app.route("/shell")
@@ -446,11 +454,18 @@ def profile(user_id):
         description: User not found
       302:
         description: Redirects to login if not authenticated
+      403:
+        description: Forbidden - User not authorized to view this profile
     """
     # this is a placeholder
     # user_id is the id of the user whose profile we want to see
     if 'loggedin' not in session:
         return redirect(url_for('login'))
+
+    # Mitigation for IDOR: Verify that the logged-in user can only access their own profile
+    # if session['id'] != user_id:
+    #     app.logger.warning('User %s attempted to access profile of user %s', session['id'], user_id)
+    #     return render_template('exception.html'), 403
 
     mydb = mysql.connector.connect(**config)
     mycursor = mydb.cursor(dictionary=True)
