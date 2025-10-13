@@ -28,8 +28,14 @@ app.secret_key = '5accdb11b2c10a78d7c92c5fa102ea77fcd50c2058b00f6e'
 app.config['UPLOAD_FOLDER']= 'src'
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config['SESSION_FILE_DIR'] = '/app/flask_session'
+app.config['SESSION_FILE_THRESHOLD'] = 500
+app.config['SESSION_FILE_MODE'] = 0o600
 app.config['SESSION_COOKIE_HTTPONLY'] = False
 
+# Ensure the flask_session directory exists with proper permissions
+if not os.path.exists('/app/flask_session'):
+    os.makedirs('/app/flask_session', mode=0o777)
 
 Session(app)
 csrf = CSRFProtect(app)
