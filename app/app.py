@@ -85,56 +85,60 @@ def login():
         mydb = mysql.connector.connect(**config)
 
         mycursor = mydb.cursor()
-
-        #mycursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
         
-
-        # mycursor.execute("SELECT * FROM knights.accounts WHERE username ='' or 1=1--' and password ='' or 1=1--'" )
-        
-        # Vulnerability: SQL Injection. The input is not sanitized.
-        mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"' and password ='"+ password +"'" )
-
-        
-        account = mycursor.fetchone()
-
-        
-        # mycursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
-        # account = mycursor.fetchone()
-        # if account and check_password_hash(account['password'], password):
-        #     # Password is correct
-        # else:
-        #     # Incorrect password
-       
-        if account:
-            session['loggedin'] = True
-            session['id'] = account[0]
-            session['username'] = account[1]
-            # return 'Logged in successfully!'
-            app.logger.info('%s logged in successfully',session['username'])
-
-            # data = {"data": session['username']}
-
-            return redirect(url_for("home",user=session['username']))
+        try:
+            #mycursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
             
-            #return render_template('home.html',session=session['username'])
-            #<!-- <h2>Welcome back, {{ request.form('session', '') }} !</h2> -->
 
-        
-        else:
-            # Vulnerability: User Enumeration. The application provides different responses
-            # for invalid usernames and invalid passwords, allowing attackers to guess valid usernames.
-            mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"'")
-            if mycursor.fetchone():
-                msg = 'Incorrect password!'
+            # mycursor.execute("SELECT * FROM knights.accounts WHERE username ='' or 1=1--' and password ='' or 1=1--'" )
+            
+            # Vulnerability: SQL Injection. The input is not sanitized.
+            mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"' and password ='"+ password +"'" )
+
+            
+            account = mycursor.fetchone()
+
+            
+            # mycursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+            # account = mycursor.fetchone()
+            # if account and check_password_hash(account['password'], password):
+            #     # Password is correct
+            # else:
+            #     # Incorrect password
+           
+            if account:
+                session['loggedin'] = True
+                session['id'] = account[0]
+                session['username'] = account[1]
+                # return 'Logged in successfully!'
+                app.logger.info('%s logged in successfully',session['username'])
+
+                # data = {"data": session['username']}
+
+                return redirect(url_for("home",user=session['username']))
+                
+                #return render_template('home.html',session=session['username'])
+                #<!-- <h2>Welcome back, {{ request.form('session', '') }} !</h2> -->
+
+            
             else:
-                msg = 'Incorrect username!'
-            # Mitigation: Always return a generic error message for login failures.
-            # msg = 'Incorrect username or password!'
-            
-            # A09:2021 - Security Logging and Monitoring Failures
-            # The application should log failed login attempts to help detect attacks
-            # like password spraying or credential stuffing.
-            app.logger.warning('Failed login attempt for username: %s', username)
+                # Vulnerability: User Enumeration. The application provides different responses
+                # for invalid usernames and invalid passwords, allowing attackers to guess valid usernames.
+                mycursor.execute("SELECT * FROM knights.accounts WHERE username ='" +username +"'")
+                if mycursor.fetchone():
+                    msg = 'Incorrect password!'
+                else:
+                    msg = 'Incorrect username!'
+                # Mitigation: Always return a generic error message for login failures.
+                # msg = 'Incorrect username or password!'
+                
+                # A09:2021 - Security Logging and Monitoring Failures
+                # The application should log failed login attempts to help detect attacks
+                # like password spraying or credential stuffing.
+                app.logger.warning('Failed login attempt for username: %s', username)
+        finally:
+            mycursor.close()
+            mydb.close()
 
     return render_template('login.html',msg=msg)
 
@@ -174,28 +178,33 @@ def register():
         
         mydb = mysql.connector.connect(**config)
         mycursor = mydb.cursor(dictionary=True)
-        mycursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
-        account = mycursor.fetchone()
+        
+        try:
+            mycursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+            account = mycursor.fetchone()
 
-        if account:
-            msg = 'Account already exists!'
-        elif not re.match(r'[A-Za-z0-9]+', username):
-            msg = 'Username must contain only characters and numbers!'
-        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
-            msg = 'Invalid email address!'
-        elif not username or not password or not email:
-            msg = 'Please fill out the form!'
-        else:
-            # Vulnerability: Storing password in plaintext.
-            # If the database is compromised, all user passwords will be exposed.
-            mycursor.execute('INSERT INTO accounts (username, password, email) VALUES (%s, %s, %s)', (username, password, email,))
-            
-            # Mitigation: Hash the password before storing it.
-            # hash = generate_password_hash(password)
-            # mycursor.execute('INSERT INTO accounts (username, password) VALUES (%s, %s)', (username, hash,))
-            
-            mydb.commit()
-            msg = 'You have successfully registered!'
+            if account:
+                msg = 'Account already exists!'
+            elif not re.match(r'[A-Za-z0-9]+', username):
+                msg = 'Username must contain only characters and numbers!'
+            elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+                msg = 'Invalid email address!'
+            elif not username or not password or not email:
+                msg = 'Please fill out the form!'
+            else:
+                # Vulnerability: Storing password in plaintext.
+                # If the database is compromised, all user passwords will be exposed.
+                mycursor.execute('INSERT INTO accounts (username, password, email) VALUES (%s, %s, %s)', (username, password, email,))
+                
+                # Mitigation: Hash the password before storing it.
+                # hash = generate_password_hash(password)
+                # mycursor.execute('INSERT INTO accounts (username, password) VALUES (%s, %s)', (username, hash,))
+                
+                mydb.commit()
+                msg = 'You have successfully registered!'
+        finally:
+            mycursor.close()
+            mydb.close()
     elif request.method == 'POST':
         msg = 'Please fill out the form!'
     
@@ -350,21 +359,21 @@ def blog():
         mydb = mysql.connector.connect(**config)
 
         mycursor = mydb.cursor()
-
         
-        mycursor.execute("INSERT INTO comments (comment) VALUES (%s)",(comment,))
+        try:
+            mycursor.execute("INSERT INTO comments (comment) VALUES (%s)",(comment,))
 
-        mydb.commit()
+            mydb.commit()
 
+            mycursor.execute("SELECT * FROM knights.comments")
 
-        mydb = mysql.connector.connect(**config)
-        mycursor = mydb.cursor()
-        mycursor.execute("SELECT * FROM knights.comments")
-
-        comment = []
-        
-        for key,value in mycursor.fetchall():
-                    comment.append(value)
+            comment = []
+            
+            for key,value in mycursor.fetchall():
+                        comment.append(value)
+        finally:
+            mycursor.close()
+            mydb.close()
         
     
     return render_template('index.html', comments=comment)
@@ -403,14 +412,18 @@ def people_list():
     mydb = mysql.connector.connect(**config)
 
     mycursor = mydb.cursor()
+    
+    try:
+        if request.method == 'GET':
+            mycursor.execute("SELECT * FROM knights.personalinfo")
 
-    if request.method == 'GET':
-        mycursor.execute("SELECT * FROM knights.personalinfo")
-
-        for row in mycursor.fetchall():
-            cr.append({"id": row[0], "username": (row[1]), "password": (row[2]),"email": (row[3]),"cpf": (row[4])})
-        
-        return render_template("people.html", details = cr)
+            for row in mycursor.fetchall():
+                cr.append({"id": row[0], "username": (row[1]), "password": (row[2]),"email": (row[3]),"cpf": (row[4])})
+            
+            return render_template("people.html", details = cr)
+    finally:
+        mycursor.close()
+        mydb.close()
 
 
 @app.route('/profile/<int:user_id>')
@@ -441,15 +454,19 @@ def profile(user_id):
 
     mydb = mysql.connector.connect(**config)
     mycursor = mydb.cursor(dictionary=True)
-    mycursor.execute("SELECT username, email, cpf FROM accounts WHERE id = %s", (user_id,))
-    user = mycursor.fetchone()
-    mycursor.close()
+    
+    try:
+        mycursor.execute("SELECT username, email, cpf FROM accounts WHERE id = %s", (user_id,))
+        user = mycursor.fetchone()
 
-    if user:
-        # we found the user, now we can display their profile
-        return render_template('profile.html', user=user)
+        if user:
+            # we found the user, now we can display their profile
+            return render_template('profile.html', user=user)
 
-    return render_template('exception.html'), 404
+        return render_template('exception.html'), 404
+    finally:
+        mycursor.close()
+        mydb.close()
 
 @app.route('/ssrf', methods=['GET', 'POST'])
 def ssrf():
