@@ -54,7 +54,7 @@ A deliberately vulnerable web application based on the OWASP Top 10 2021.
 
 ```http://localhost:8085```
 
-- MySQL DB runs at 32000
+- MySQL DB runs at 3306
 
 ---
 ## Routes

@@ -33,7 +33,7 @@
            
           <br>
          	
-          <input class="btn btn-outline-secondary" type="submit" value="Login">
+          <input class="btn btn-outline-secondary" type="submit" value="Login" onclick="this.disabled=true;this.value='Loading...';this.form.submit();">
 
           <div class="invalid-feedback">{{ msg }}</div>
 
