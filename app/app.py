@@ -484,6 +484,7 @@ def profile(user_id):
         mydb.close()
 
 @app.route('/ssrf', methods=['GET', 'POST'])
+@csrf.exempt
 def ssrf():
     """
     Server-Side Request Forgery (SSRF) test endpoint
