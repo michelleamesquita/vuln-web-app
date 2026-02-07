@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.14.3
 
 EXPOSE 5000
 
